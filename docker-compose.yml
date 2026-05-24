@@ -1,0 +1,59 @@
+services:
+  api1:
+    build: .
+    ports:
+      - "9999:9999"
+    environment:
+      - TCP_PORT=9999
+      - INDEX_PATH=/index/index.bin
+      - NPROBE=20
+      - FAST_NPROBE=1
+      - ADAPTIVE_MIN=2
+      - ADAPTIVE_MAX=4
+      - EXTREME0_WORST_THRESHOLD=3501932
+      - EXTREME1_WORST_THRESHOLD=3569273
+      - EXTREME5_WORST_THRESHOLD=4594089
+      - REPAIR_MIN=99
+      - REPAIR_MAX=0
+      - INDEX_MMAP=1
+      - MALLOC_ARENA_MAX=1
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "175M"
+
+  api2:
+    build: .
+    network_mode: "service:api1"
+    environment:
+      - TCP_PORT=9999
+      - INDEX_PATH=/index/index.bin
+      - NPROBE=20
+      - FAST_NPROBE=1
+      - ADAPTIVE_MIN=2
+      - ADAPTIVE_MAX=4
+      - EXTREME0_WORST_THRESHOLD=3501932
+      - EXTREME1_WORST_THRESHOLD=3569273
+      - EXTREME5_WORST_THRESHOLD=4594089
+      - REPAIR_MIN=99
+      - REPAIR_MAX=0
+      - INDEX_MMAP=1
+      - MALLOC_ARENA_MAX=1
+    depends_on:
+      - api1
+    logging:
+      driver: "none"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "175M"
