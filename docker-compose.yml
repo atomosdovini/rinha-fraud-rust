@@ -1,10 +1,27 @@
 services:
-  api1:
-    build: .
+  lb:
+    image: ghcr.io/atomosdovini/rinha-fraud-rust:latest
+    entrypoint: ["/lb"]
     ports:
       - "9999:9999"
     environment:
-      - TCP_PORT=9999
+      - PORT=9999
+      - UPSTREAMS=/sockets/api1.sock,/sockets/api2.sock
+    volumes:
+      - sockets:/sockets
+    depends_on:
+      - api1
+      - api2
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: "20M"
+
+  api1:
+    image: ghcr.io/atomosdovini/rinha-fraud-rust:latest
+    environment:
+      - LISTEN=/sockets/api1.sock
       - INDEX_PATH=/index/index.bin
       - NPROBE=20
       - FAST_NPROBE=1
@@ -17,6 +34,8 @@ services:
       - REPAIR_MAX=0
       - INDEX_MMAP=1
       - MALLOC_ARENA_MAX=1
+    volumes:
+      - sockets:/sockets
     ulimits:
       nofile:
         soft: 65535
@@ -24,14 +43,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "175M"
+          cpus: "0.45"
+          memory: "165M"
 
   api2:
-    build: .
-    network_mode: "service:api1"
+    image: ghcr.io/atomosdovini/rinha-fraud-rust:latest
     environment:
-      - TCP_PORT=9999
+      - LISTEN=/sockets/api2.sock
       - INDEX_PATH=/index/index.bin
       - NPROBE=20
       - FAST_NPROBE=1
@@ -44,8 +62,8 @@ services:
       - REPAIR_MAX=0
       - INDEX_MMAP=1
       - MALLOC_ARENA_MAX=1
-    depends_on:
-      - api1
+    volumes:
+      - sockets:/sockets
     logging:
       driver: "none"
     ulimits:
@@ -55,5 +73,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "175M"
+          cpus: "0.45"
+          memory: "165M"
+
+volumes:
+  sockets:
