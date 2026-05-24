@@ -1,6 +1,7 @@
 {
-  "apelido": "atomosdovini-rust",
-  "linguagem": "Rust",
-  "framework": "none",
-  "repo": "https://github.com/atomosdovini/rinha-fraud-rust"
+  "participants": ["atomosdovini"],
+  "social": ["https://github.com/atomosdovini"],
+  "source-code-repo": "https://github.com/atomosdovini/rinha-fraud-rust",
+  "stack": ["rust", "avx2", "ivf-knn", "thread-per-connection", "mimalloc"],
+  "open_to_work": false
 }
