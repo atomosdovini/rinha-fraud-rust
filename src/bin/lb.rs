@@ -21,7 +21,10 @@ fn pass_fd(ctrl: &UnixStream, client_fd: i32) -> bool {
         mh.msg_iov        = &mut iov;
         mh.msg_iovlen     = 1;
         mh.msg_control    = cmsgbuf.as_mut_ptr() as *mut _;
-        mh.msg_controllen = cmsgbuf.len() as _;
+        // msg_controllen for SEND must be exactly CMSG_SPACE(4) = 24 bytes.
+        // Setting it to buffer size (64) makes the kernel find a zero-length CMSG after
+        // the valid one and fail with EINVAL.
+        mh.msg_controllen = libc::CMSG_SPACE(4) as _;
         let cm = libc::CMSG_FIRSTHDR(&mh);
         (*cm).cmsg_level = libc::SOL_SOCKET;
         (*cm).cmsg_type  = libc::SCM_RIGHTS;
