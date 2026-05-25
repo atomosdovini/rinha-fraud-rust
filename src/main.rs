@@ -229,8 +229,8 @@ fn main() {
         .and_then(|v| v.parse::<u16>().ok());
 
     let cfg = Config {
-        nprobe:      env_usize("NPROBE",     20),
-        fast_nprobe: env_usize("FAST_NPROBE", 1),
+        nprobe:      env_usize("NPROBE",     64),
+        fast_nprobe: env_usize("FAST_NPROBE", 4),
         adapt_min:   env_u8("ADAPTIVE_MIN",  2),
         adapt_max:   env_u8("ADAPTIVE_MAX",  4),
         thr0:        env_u64("EXTREME0_WORST_THRESHOLD", 3501932),
